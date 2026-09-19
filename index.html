@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>文艺指南 · 演示视频分镜（90 秒 / 18 镜）</title>
+<style>
+/* ============================================================
+   画布约定：1px = 1dp，机型 360×800dp（现代安卓 20:9）
+   所有数值直接取自 app 源码，未四舍五入
+   ============================================================ */
+:root{
+  --bg:#9FAFF0; --ink:#252527; --ink2:#4C4951; --muted:#74717B;
+  --paper:#FFF9EC; --paper2:#F3F0E8;
+  --purple:#7F6F90; --lilac:#C8B9D6; --aqua:#92DDD1; --blue:#92A7ED;
+  --pink:#E98BCF; --lime:#CBEF72; --yellow:#F1CE67; --coral:#E99686;
+  --serif:"Songti SC","STSong","SimSun","Noto Serif SC",Georgia,serif;
+  --sans:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+  --rnd:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"SFMono-Regular",Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#E7E3DA;color:var(--ink);font-family:var(--sans);padding:40px 24px 72px;-webkit-font-smoothing:antialiased}
+
+header{max-width:1240px;margin:0 auto 34px}
+h1{font-family:var(--rnd);font-weight:800;font-size:29px;letter-spacing:-.02em}
+h1 small{font-family:var(--mono);font-size:12.5px;font-weight:400;color:var(--muted);margin-left:9px;letter-spacing:0}
+.note{margin-top:12px;font-size:13px;line-height:1.9;color:var(--ink2);max-width:820px}
+.note b{font-weight:800}
+.src{margin-top:10px;font:12px/1.85 var(--mono);color:var(--muted)}
+
+main{display:grid;grid-template-columns:repeat(auto-fill,368px);gap:36px 24px;justify-content:center;max-width:1240px;margin:0 auto}
+.shot{display:flex;flex-direction:column;gap:11px}
+.hd{display:flex;align-items:baseline;gap:8px;font:12px/1 var(--mono);color:var(--muted)}
+.hd .no{font-weight:700;color:var(--ink);font-size:13px}
+.hd .tc{background:#fff;border:1px solid #CFC8B8;border-radius:20px;padding:2px 9px}
+.hd .dur{margin-left:auto}
+.sub{font-family:var(--rnd);font-size:14px;font-weight:700;line-height:1.6}
+
+/* ---------- 手机 ---------- */
+.phone{width:360px;height:800px;border-radius:26px;overflow:hidden;position:relative;background:var(--bg);
+  border:2px solid #1b1b1d;margin:0 auto;display:flex;flex-direction:column}
+/* AppBackground：底 + 白径向光斑 + 右侧线框 Blob + 左下 Lime 圆 */
+.phone::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(closest-side at 72% 14%,rgba(255,255,255,.18),transparent),
+  radial-gradient(closest-side at 24% 62%,rgba(255,255,255,.12),transparent),
+  radial-gradient(closest-side at 78% 6%,rgba(180,83,9,.06),transparent),
+  radial-gradient(closest-side at 18% 88%,rgba(42,36,24,.05),transparent)}
+.blob{position:absolute;left:calc(100% - 38px - 112px);top:135px;width:112px;height:112px;z-index:0;
+  border:3px solid rgba(37,37,39,.15);border-radius:48px 52px 43px 57px;transform:rotate(17deg)}
+.limecirc{position:absolute;left:-22px;bottom:122px;width:70px;height:70px;border-radius:50%;background:rgba(203,239,114,.36);z-index:0}
+.sbar{position:relative;z-index:2;height:24px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;font:600 10px/1 var(--sans);color:var(--ink)}
+.gbar{position:relative;z-index:2;height:24px;display:grid;place-items:center}
+.gbar i{display:block;width:108px;height:4px;border-radius:2px;background:var(--ink);opacity:.3}
+
+/* ---------- 顶栏 ---------- */
+.topbar{position:relative;z-index:2;padding:6px 14px 4px;min-height:50px;display:flex;align-items:center;gap:10px;
+  background:linear-gradient(to bottom,rgba(159,175,240,.95) 72%,rgba(159,175,240,0))}
+.topbar img{height:30px;display:block}
+.topbar .sp{flex:1}
+.rbtn{width:40px;height:40px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);
+  box-shadow:0 4px 0 var(--ink);display:grid;place-items:center;flex:0 0 auto}
+.rbtn svg{width:20px;height:20px}
+.rbtn.av{font:800 15px/1 var(--rnd);color:var(--ink)}
+
+/* 二级页顶栏 */
+.sbar2{position:relative;z-index:2;padding:6px 14px 4px;min-height:50px;display:flex;align-items:center;
+  background:linear-gradient(to bottom,rgba(159,175,240,.95) 72%,rgba(159,175,240,0))}
+.back{width:44px;height:44px;border-radius:16px;background:var(--paper);border:2px solid var(--ink);
+  box-shadow:0 4px 0 var(--ink);display:grid;place-items:center;font:800 18px/1 var(--rnd);flex:0 0 auto}
+.sbar2 .ttl{margin-left:8px;font-family:var(--rnd);font-weight:800;font-size:25px;letter-spacing:-.02em;padding-top:3px}
+
+/* ---------- 底部导航 ---------- */
+.nav{position:relative;z-index:2;margin:0 13px 9px;background:var(--paper);border:2px solid var(--ink);
+  border-radius:25px;box-shadow:0 6px 0 var(--ink);padding:6px;display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.nav b{height:46px;border:2px solid var(--ink);border-radius:17px;background:var(--paper);
+  box-shadow:0 3px 0 var(--ink);display:grid;place-items:center;font:800 14px/1 var(--rnd);color:var(--ink)}
+.nav b.on{background:var(--aqua)}
+.nav.manual b.on{background:var(--pink)}
+.nav.route b.on{background:var(--yellow)}
+
+/* ---------- 通用卡 ---------- */
+.body{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;min-height:0}
+
+/* 今日页 */
+.today{padding:0 18px;display:flex;flex-direction:column;min-height:0;flex:1}
+.today h2{font-family:var(--rnd);font-weight:800;font-size:42px;line-height:42px;letter-spacing:-.055em}
+.dotbar{display:flex;justify-content:center;align-items:center;gap:6px;padding:16px 0 0}
+.dotbar i.fill{width:28px;height:9px;border-radius:999px;background:var(--pink);border:1.5px solid var(--ink)}
+.dotbar i.empty{width:9px;height:9px;border-radius:50%;background:rgba(37,37,39,.18);border:1.5px solid rgba(37,37,39,.22)}
+.dotbar span{font:800 10px/1 var(--rnd);color:var(--pink);margin-left:4px}
+
+/* 概念卡（34 圆角 / 7 硬影 / 2 墨边 / 纸底 + 右上溢出 Aqua 块 + 粉星） */
+.kcard{position:relative;flex:1;min-height:0;background:var(--paper);border:2px solid var(--ink);
+  border-radius:34px;box-shadow:0 7px 0 var(--ink);margin-bottom:7px}
+.kcard .kblob{position:absolute;right:-23px;top:-18px;width:96px;height:96px;background:var(--aqua);
+  border:2px solid var(--ink);border-radius:48px 52px 44px 56px;transform:rotate(18deg)}
+.kcard .kstar{position:absolute;right:18px;top:67px;width:55px;height:55px}
+.kcard .kinner{position:absolute;inset:0;display:flex;flex-direction:column;border-radius:34px;overflow:hidden}
+.khead{display:flex;align-items:center;justify-content:space-between;padding:24px 24px 0}
+.kno{font:800 17px/1 var(--rnd)}
+.fpill{background:var(--blue);border:2px solid var(--ink);border-radius:999px;padding:6px 10px;
+  font:800 10px/1 var(--rnd);color:var(--ink)}
+.kmid{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 24px}
+.kname{font-family:var(--rnd);font-weight:800;font-size:52px;line-height:1.02;letter-spacing:-.02em}
+.ken{font:700 16px/1.3 var(--sans);color:var(--ink2);margin-top:12px;letter-spacing:.04em}
+.kshort{font:500 16px/1.58 var(--sans);color:var(--ink2);margin-top:12px}
+.kfoot{padding:0 24px 18px}
+.dash{height:0;border-top:2px dashed rgba(37,37,39,.30)}
+.kfoot .row{display:flex;justify-content:space-between;align-items:baseline;padding-top:11px;
+  font:400 11px/1.4 var(--sans);color:var(--muted)}
+.kfoot .row b{font-weight:800;color:var(--ink)}
+/* 第二面 */
+.bname{font:700 26px/1.2 var(--rnd);padding-top:2px}
+.bfield{font:700 9.5px/1 var(--rnd);color:rgba(37,37,39,.3);padding-left:9px}
+.brows{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 24px}
+.brow{font:400 15px/1.62 var(--sans);color:var(--ink2)}
+.brow em{font:900 10px/1 var(--rnd);font-style:normal;letter-spacing:.1em;color:var(--purple);
+  background:rgba(127,111,144,.13);padding:2px 6px;margin-right:6px}
+/* 滑动徽章 */
+.badge{position:absolute;top:50%;transform:translateY(-50%);z-index:3;background:rgba(146,221,209,.42);
+  border-radius:999px;padding:6px 12px;font:900 11px/1 var(--rnd);color:var(--ink)}
+.badge.r{right:12px}
+.backdeck{position:absolute;left:18px;right:18px;top:104px;bottom:26px;background:var(--paper);
+  border:2px solid var(--ink);border-radius:34px;opacity:.55;transform:scale(.95) translateY(12px)}
+
+/* ---------- 现场题 ---------- */
+.sqbody{flex:1;min-height:0;overflow:hidden;padding:14px 18px 0;display:flex;flex-direction:column}
+.stepbar{display:flex;gap:6px;margin-bottom:14px}
+.stepbar b{border-radius:999px;border:2px solid var(--ink);padding:7px 9px;font:800 9.5px/1 var(--rnd);
+  background:rgba(255,249,236,.55);color:rgba(37,37,39,.56)}
+.stepbar b.on{background:var(--ink);color:var(--paper)}
+.pcard{background:var(--paper);border:2px solid var(--ink);border-radius:28px;box-shadow:0 4px 0 var(--ink);padding:21px}
+.sqprog{font:800 11px/1 var(--rnd);color:var(--muted)}
+.sqq{font-family:var(--rnd);font-weight:800;font-size:27px;line-height:1.26;letter-spacing:-.035em;margin-top:8px}
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.opt{border:2px solid var(--ink);border-radius:17px;padding:13px 14px;font:800 12.5px/1.55 var(--rnd);
+  color:var(--ink);box-shadow:0 4px 0 rgba(37,37,39,.48)}
+.opt.a{background:var(--aqua)} .opt.b{background:var(--pink)} .opt.c{background:var(--yellow)}
+.opt.sel{background:var(--purple);color:#fff;box-shadow:0 2px 0 rgba(37,37,39,.48);transform:scale(1.03) translateY(2px)}
+.alayer{background:var(--blue);border:2px solid var(--ink);border-radius:22px;box-shadow:0 5px 0 rgba(37,37,39,.45);
+  padding:16px;margin-top:16px}
+.alayer .stance{font:800 10px/1 var(--rnd);color:var(--ink2)}
+.alayer .core{font-family:var(--rnd);font-weight:800;font-size:21px;line-height:1.34;margin-top:8px}
+.alayer .expl{font:400 12px/1.75 var(--sans);font-weight:650;color:var(--ink2);margin-top:9px}
+.alayer .src{font:800 10px/1.5 var(--rnd);color:var(--muted);margin-top:11px}
+.risk{background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:11px 12px;margin-top:11px;
+  font:400 12px/1.75 var(--sans);font-weight:650;color:var(--ink2)}
+.risk b{font-weight:800}
+.glowrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.gpill{border:2px solid var(--ink);border-radius:999px;background:var(--lime);box-shadow:0 3px 0 rgba(37,37,39,.42);
+  padding:8px 10px;font:800 10.5px/1 var(--rnd);display:flex;align-items:center;gap:5px}
+.gpill.p{background:var(--pink)} .gpill.a{background:var(--aqua)} .gpill.y{background:var(--yellow)}
+.gpill svg{width:10px;height:10px}
+.rewr{border-top:2px dashed rgba(37,37,39,.2);margin-top:13px;padding-top:13px}
+.rewr .lb{font:800 10.5px/1 var(--rnd)}
+.rin{height:82px;border:2px solid var(--ink);border-radius:15px;background:var(--paper);padding:12px;
+  font:650 12.5px/1.6 var(--sans);color:var(--ink);margin-top:7px}
+.rin .ph{color:var(--muted);font-weight:400}
+.btn{margin-top:10px;border:2px solid var(--ink);border-radius:16px;padding:10px 15px;display:flex;
+  align-items:center;justify-content:center;gap:6px;font:800 14px/1 var(--rnd)}
+.btn.pri{background:var(--lime);box-shadow:0 5px 0 var(--ink)}
+.btn.sec{background:var(--paper);box-shadow:0 4px 0 rgba(37,37,39,.45)}
+.btn.sec.blue{background:var(--blue)}
+.toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);z-index:5;background:var(--ink);
+  color:var(--paper);border-radius:999px;padding:9px 16px;font:800 12px/1 var(--rnd);white-space:nowrap;
+  box-shadow:0 4px 0 rgba(37,37,39,.3)}
+
+/* ---------- 概念库 ---------- */
+.kb{padding:0 18px;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.kb .sub2{font:800 11px/1.4 var(--rnd);color:var(--muted)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.stat{border:2px solid var(--ink);border-radius:18px;box-shadow:0 3px 0 var(--ink);padding:12px 10px}
+.stat.a{background:var(--aqua)} .stat.b{background:var(--pink)}
+.stat .n{font:800 19px/1 var(--rnd)}
+.stat .l{font:800 9px/1 var(--rnd);color:var(--ink2);margin-top:2px}
+.fav{display:flex;align-items:center;gap:8px;background:var(--yellow);border:2px solid var(--ink);
+  border-radius:16px;box-shadow:0 3px 0 var(--ink);padding:12px 14px;margin-top:10px;font:800 12.5px/1 var(--rnd)}
+.fav .st{font-size:15px} .fav .sp{flex:1}
+.search{height:44px;border:2px solid var(--ink);border-radius:14px;background:var(--paper);margin-top:14px;
+  display:flex;align-items:center;padding:0 14px;font:700 13px/1 var(--rnd);color:var(--muted)}
+.kbh{font-family:var(--rnd);font-weight:800;font-size:15px;margin-top:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.fcard{border:2px solid var(--ink);border-radius:22px;box-shadow:0 4px 0 var(--ink);padding:14px}
+.fcard.a{background:var(--aqua)} .fcard.b{background:var(--pink)} .fcard.c{background:var(--blue)} .fcard.d{background:var(--lime)}
+.fcard .fn{font:800 15px/1.25 var(--rnd)}
+.fcard .fc{font:800 22px/1.1 var(--rnd);margin-top:6px}
+.fcard .fp{height:4px;border-radius:2px;background:rgba(37,37,39,.15);margin-top:9px;overflow:hidden}
+.fcard .fp i{display:block;height:100%;background:var(--ink)}
+
+/* ---------- 识宝 ---------- */
+.cam{position:relative;z-index:2;flex:1;min-height:0;overflow:hidden;
+  background:linear-gradient(165deg,#6E6A63,#4A4741 55%,#36342F)}
+.cam .scene{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);}
+.camframe{padding:12px;background:linear-gradient(150deg,#C9A24D,#8E6E2E);border-radius:3px;
+  box-shadow:0 10px 22px rgba(0,0,0,.45)}
+.camcanvas{width:126px;height:99px;background:
+  radial-gradient(closest-side at 30% 62%,#7FA86B,transparent),
+  radial-gradient(closest-side at 62% 40%,#B9CE86,transparent),
+  radial-gradient(closest-side at 74% 72%,#5E8C6A,transparent),
+  linear-gradient(170deg,#8FB0C9,#5F7E9C);position:relative}
+.camcanvas::after{content:"";position:absolute;inset:0;background:radial-gradient(closest-side at 46% 52%,rgba(255,255,255,.5),transparent)}
+.cambadge{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:var(--lime);
+  border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font:800 10px/1 var(--rnd)}
+.camctl{position:relative;z-index:2;height:116px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px}
+.cbtn{width:48px;height:48px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);
+  box-shadow:0 3px 0 var(--ink);display:grid;place-items:center;font-size:16px}
+.cbtn.lime{background:var(--lime)}
+.shut{width:76px;height:76px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);
+  box-shadow:0 4px 0 var(--ink);padding:9px}
+.shut i{display:block;width:100%;height:100%;border-radius:50%;background:var(--ink)}
+/* 结果舞台 */
+.stage{position:relative;z-index:2;margin:8px 16px 0;flex:1;min-height:0;border-radius:20px;border:2px solid var(--ink);
+  background:#1E1E20;overflow:hidden}
+.stage .blur{position:absolute;inset:0;background:linear-gradient(165deg,#6E6A63,#3A3834);transform:scale(1.28);
+  filter:blur(9px);opacity:.55}
+.vf{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);border:2px solid var(--paper);
+  border-radius:10px;background:var(--ink);padding:0;overflow:hidden}
+.vf .camcanvas{width:118px;height:92px}
+.scanline{position:absolute;left:6%;right:6%;height:3px;background:var(--lime);border-radius:2px;box-shadow:0 0 12px var(--lime)}
+.corner{position:absolute;width:16px;height:16px;border:2px solid var(--paper)}
+.syspill{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:rgba(37,37,39,.72);
+  border-radius:999px;padding:5px 12px;font:700 10.5px/1 var(--rnd);color:var(--paper);white-space:nowrap}
+.vault{position:absolute;right:10px;top:10px;background:var(--paper);border:2px solid var(--ink);border-radius:999px;
+  padding:4px 10px;font:800 10px/1 var(--rnd);display:flex;gap:5px;align-items:baseline}
+.vault span{font-size:12px}
+.cutwrap{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%)}
+.cutwrap .sil{position:absolute;left:5px;top:7px;width:100%;height:100%;background:var(--ink);
+  border-radius:3px;opacity:.95}
+.cutwrap .fr{padding:9px;background:linear-gradient(150deg,#C9A24D,#8E6E2E);border-radius:3px;position:relative}
+.cutwrap .cc{width:124px;height:97px;background:
+  radial-gradient(closest-side at 30% 62%,#7FA86B,transparent),
+  radial-gradient(closest-side at 62% 40%,#B9CE86,transparent),
+  radial-gradient(closest-side at 74% 72%,#5E8C6A,transparent),
+  linear-gradient(170deg,#8FB0C9,#5F7E9C)}
+/* 讲解卡 */
+.sheet{position:relative;z-index:3;flex:0 0 65%;background:var(--paper);border:2px solid var(--ink);
+  border-radius:18px 18px 0 0;margin:8px 16px 0;box-shadow:0 -2px 0 var(--ink);display:flex;flex-direction:column;min-height:0}
+.sheet .shead{padding:14px 14px 0}
+.sheet h3{font-family:var(--rnd);font-weight:800;font-size:22px;line-height:28px}
+.sheet .meta{font:700 10.5px/15px var(--sans);color:var(--muted);margin-top:2px}
+.sheet .rule{height:2px;background:var(--paper2);margin:8px 14px 0}
+.sheet .secs{overflow:hidden;padding:0 14px}
+.sec{padding-top:10px}
+.sec .lb{font:800 12px/1 var(--rnd);color:var(--purple)}
+.sec .tx{font:700 12.5px/20px var(--sans);color:var(--ink2);margin-top:2px}
+.kwpills{display:flex;gap:6px;padding:12px 14px 0}
+.kwpills b{background:var(--paper2);border:2px solid var(--ink);border-radius:999px;padding:3px 9px;font:800 10px/1 var(--rnd)}
+.sheet .src2{padding:10px 14px 0;font:700 9.5px/13px var(--sans);color:var(--purple)}
+.sheet .save{padding:12px 14px 14px}
+
+/* ---------- 台词本 / 助手 ---------- */
+.ph{padding:0 18px;flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.phrase{background:var(--paper);border:2px solid var(--ink);border-radius:18px;box-shadow:0 4px 0 var(--ink);padding:14px}
+.phrase .t{font:800 13.5px/1.6 var(--rnd)}
+.phrase .tag{font:700 9.5px/1 var(--mono);color:var(--muted);margin-top:8px}
+.chat{padding:0 16px;flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.bub{max-width:290px;background:var(--paper);border:2px solid var(--ink);border-radius:16px;
+  box-shadow:0 4px 0 var(--ink);padding:12px;font:400 14px/21px var(--sans)}
+.bub.me{align-self:flex-end;background:var(--aqua)}
+.bub .who{font:800 11px/1 var(--rnd);color:var(--muted);margin:0 0 2px 4px}
+.bub .cite{margin-top:8px;padding-top:7px;border-top:1px dashed rgba(37,37,39,.28);font:700 9.5px/1.5 var(--mono);color:var(--muted)}
+.inbar{position:relative;z-index:2;padding:12px 16px;display:flex;align-items:center;gap:8px}
+.ibtn{width:42px;height:42px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);
+  box-shadow:0 3px 0 var(--ink);display:grid;place-items:center;font-size:18px}
+.ibtn.send{background:var(--lime)}
+.ifield{flex:1;background:var(--paper);border:2px solid var(--ink);border-radius:12px;box-shadow:0 4px 0 var(--ink);
+  padding:10px 14px;font:400 14px/1 var(--sans);color:var(--muted)}
+
+/* ---------- 落版（唯一非 App 画面）---------- */
+.endcard{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:0 40px;text-align:center}
+.endcard img{height:44px}
+.endcard .sl{font:800 15px/1.7 var(--rnd)}
+.endcard .qr{width:112px;height:112px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:8px}
+.endcard .qr img{width:100%;height:100%;display:block}
+.endcard .ver{font:600 9.5px/1.6 var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>文艺指南 · 演示视频分镜 <small>90s / 18 shots / v1.0.133</small></h1>
+  <p class="note">
+    画布 <b>1px = 1dp</b>，机型 <b>360×800dp</b>（现代安卓 20:9），所有尺寸、圆角、硬影、字号、颜色<b>直接取自 app 源码</b>，未四舍五入。<br>
+    顶栏 logo 用真机资源 <code>artify_logo_vector.png</code>；每个镜头的状态都是 App 真会出现的状态（含滑动中、扫描中、落卡中等动画帧）。<br>
+    时长 5+4+4+4+5+5+5+5+6+5+7+6+4+8+4+5+4+4 = <b>90 秒</b>。
+  </p>
+  <p class="src">
+    现场题数据：docs/文艺指南v2-现场题UI.html（scene-001 真实题库）｜概念卡：官网真实示例｜识宝卡片：项目自带范例<br>
+    第 18 镜是视频落版，不是 App 界面（全片唯一一处）。
+  </p>
+</header>
+
+<main>
+
+<!-- 01 今日卡正面 -->
+<section class="shot">
+  <div class="hd"><span class="no">01</span><span class="tc">0:00–0:05</span><span class="dur">5s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="topbar">
+      <img src="assets/logo.png" alt="文艺指南">
+      <span class="sp"></span>
+      <span class="rbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#252527" stroke-width="1.8"><path d="M4 5h7v5a3 3 0 0 1-3 3H6a2 2 0 0 1-2-2zM4 19h7v-5a3 3 0 0 0-3-3H6a2 2 0 0 0-2 2zM20 5h-7v5a3 3 0 0 0 3 3h2a2 2 0 0 0 2-2zM20 19h-7v-5a3 3 0 0 1 3-3h2a2 2 0 0 1 2 2z"/></svg></span>
+      <span class="rbtn av">文</span>
+    </div>
+    <div class="body">
+      <div class="today">
+        <h2>今日</h2>
+        <div style="height:14px"></div>
+        <div class="kcard">
+          <i class="kblob"></i>
+          <svg class="kstar" viewBox="0 0 24 24"><path d="M12 2 14.9 9.2 22.5 9.6 16.6 14.5 18.5 21.9 12 17.6 5.5 21.9 7.4 14.5 1.5 9.6 9.1 9.2Z" fill="#E98BCF" stroke="#252527" stroke-width="1.4"/></svg>
+          <div class="kinner">
+            <div class="khead"><span class="kno">01</span><span class="fpill">存在主义</span></div>
+            <div class="kmid">
+              <div class="kname">本真性</div>
+              <div class="ken">AUTHENTICITY</div>
+              <div class="kshort">不是任性做自己，是承担起自身的有限处境和选择。</div>
+            </div>
+            <div class="kfoot"><div class="dash"></div>
+              <div class="row"><span>存在主义 · 难度 3/4</span><b>点击看阐释 →</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="dotbar"><i class="fill"></i><i class="fill"></i><i class="fill"></i><i class="empty"></i><i class="empty"></i></div>
+      </div>
+    </div>
+    <div class="nav"><b class="on">今日</b><b>手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">一次只给你一张卡</p>
+</section>
+
+<!-- 02 右滑中 -->
+<section class="shot">
+  <div class="hd"><span class="no">02</span><span class="tc">0:05–0:09</span><span class="dur">4s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="topbar">
+      <img src="assets/logo.png" alt="文艺指南"><span class="sp"></span>
+      <span class="rbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#252527" stroke-width="1.8"><path d="M4 5h7v5a3 3 0 0 1-3 3H6a2 2 0 0 1-2-2zM4 19h7v-5a3 3 0 0 0-3-3H6a2 2 0 0 0-2 2zM20 5h-7v5a3 3 0 0 0 3 3h2a2 2 0 0 0 2-2zM20 19h-7v-5a3 3 0 0 1 3-3h2a2 2 0 0 1 2 2z"/></svg></span>
+      <span class="rbtn av">文</span>
+    </div>
+    <div class="body">
+      <div class="today" style="position:relative">
+        <h2>今日</h2>
+        <div style="height:14px"></div>
+        <div class="backdeck"></div>
+        <div class="kcard" style="position:relative;z-index:1;transform:translateX(74px) rotate(4.6deg)">
+          <i class="kblob"></i>
+          <svg class="kstar" viewBox="0 0 24 24"><path d="M12 2 14.9 9.2 22.5 9.6 16.6 14.5 18.5 21.9 12 17.6 5.5 21.9 7.4 14.5 1.5 9.6 9.1 9.2Z" fill="#E98BCF" stroke="#252527" stroke-width="1.4"/></svg>
+          <div class="kinner">
+            <div class="khead"><span class="kno">01</span><span class="fpill">存在主义</span></div>
+            <div class="kmid">
+              <div class="kname">本真性</div>
+              <div class="ken">AUTHENTICITY</div>
+              <div class="kshort">不是任性做自己，是承担起自身的有限处境和选择。</div>
+            </div>
+            <div class="kfoot"><div class="dash"></div>
+              <div class="row"><span>存在主义 · 难度 3/4</span><b>点击看阐释 →</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="badge r">✓ 已学</div>
+        <div class="dotbar"><i class="fill"></i><i class="fill"></i><i class="fill"></i><i class="empty"></i><i class="empty"></i></div>
+      </div>
+    </div>
+    <div class="nav"><b class="on">今日</b><b>手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">右滑 已学（滑到 55% 即切下一张，卡片按位移旋转）</p>
+</section>
+
+<!-- 03 第二面 -->
+<section class="shot">
+  <div class="hd"><span class="no">03</span><span class="tc">0:09–0:13</span><span class="dur">4s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="topbar">
+      <img src="assets/logo.png" alt="文艺指南"><span class="sp"></span>
+      <span class="rbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#252527" stroke-width="1.8"><path d="M4 5h7v5a3 3 0 0 1-3 3H6a2 2 0 0 1-2-2zM4 19h7v-5a3 3 0 0 0-3-3H6a2 2 0 0 0-2 2zM20 5h-7v5a3 3 0 0 0 3 3h2a2 2 0 0 0 2-2zM20 19h-7v-5a3 3 0 0 1 3-3h2a2 2 0 0 1 2 2z"/></svg></span>
+      <span class="rbtn av">文</span>
+    </div>
+    <div class="body">
+      <div class="today">
+        <h2>今日</h2>
+        <div style="height:14px"></div>
+        <div class="kcard">
+          <i class="kblob"></i>
+          <div class="kinner">
+            <div class="khead" style="align-items:baseline">
+              <span class="bname">本真性</span><span class="bfield">存在主义</span>
+            </div>
+            <div style="padding:12px 24px 0"><div class="dash" style="border-color:rgba(37,37,39,.16)"></div></div>
+            <div class="brows">
+              <div class="brow"><em>释义</em>不是任性做自己，是承担起自身的有限处境和选择。</div>
+              <div style="height:14px"></div>
+              <div class="brow"><em>判断</em>说一个人本真，是说他认下自己的处境，而不是他随性。</div>
+              <div style="height:14px"></div>
+              <div class="brow"><em>分界</em>与「做自己」不同：后者不含承担，也不含限度。</div>
+            </div>
+            <div class="kfoot"><div class="dash"></div>
+              <div class="row"><span>存在主义 · 难度 3/4</span><b>点击进微课 →</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="dotbar"><i class="fill"></i><i class="fill"></i><i class="fill"></i><i class="empty"></i><i class="empty"></i></div>
+      </div>
+    </div>
+    <div class="nav"><b class="on">今日</b><b>手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">单击翻面（3D 翻面）· 再单击进微课</p>
+</section>
+
+<!-- 04 现场题题干 -->
+<section class="shot">
+  <div class="hd"><span class="no">04</span><span class="tc">0:13–0:17</span><span class="dur">4s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span>
+      <span style="display:inline-block;width:26px;height:26px;border-radius:42px 48px 38px 50px;background:var(--lime);border:2px solid var(--ink);transform:rotate(-10deg);margin-left:8px"></span>
+      <span class="ttl" style="margin-left:7px">看展现场题</span>
+    </div>
+    <div class="sqbody">
+      <div class="stepbar"><b class="on">选择观点</b><b>答案解析</b><b>发光词</b><b>改写</b><b>收藏</b></div>
+      <div class="pcard">
+        <div class="sqprog">现场 1 / 5</div>
+        <div class="sqq">朋友问：「这个展值不值得看？」</div>
+      </div>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">一个问题的五种装法 · 01 题干（不出现概念名）</p>
+</section>
+
+<!-- 05 选一种装法 -->
+<section class="shot">
+  <div class="hd"><span class="no">05</span><span class="tc">0:17–0:22</span><span class="dur">5s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span>
+      <span style="display:inline-block;width:26px;height:26px;border-radius:42px 48px 38px 50px;background:var(--lime);border:2px solid var(--ink);transform:rotate(-10deg);margin-left:8px"></span>
+      <span class="ttl" style="margin-left:7px">看展现场题</span>
+    </div>
+    <div class="sqbody">
+      <div class="stepbar"><b class="on">选择观点</b><b>答案解析</b><b>发光词</b><b>改写</b><b>收藏</b></div>
+      <div class="pcard" style="padding:16px 21px">
+        <div class="sqprog">现场 1 / 5</div>
+        <div class="sqq" style="font-size:18px">朋友问：「这个展值不值得看？」</div>
+      </div>
+      <div class="opts">
+        <div class="opt a">看它有没有一个真的想让你问的问题。没有的话，可能就只是个打卡展。</div>
+        <div class="opt b sel">值不值得，先看你想从它这里拿走什么：认真看作品，还是找个地方拍照。</div>
+        <div class="opt c">我一般先看策展前言和参展名单，大概能看出它是想卖票，还是想讲东西。</div>
+      </div>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">02 选一种装法 · 三种说法，不判对错（选中转紫并弹起）</p>
+</section>
+
+<!-- 06 答案解析 -->
+<section class="shot">
+  <div class="hd"><span class="no">06</span><span class="tc">0:22–0:27</span><span class="dur">5s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span>
+      <span style="display:inline-block;width:26px;height:26px;border-radius:42px 48px 38px 50px;background:var(--lime);border:2px solid var(--ink);transform:rotate(-10deg);margin-left:8px"></span>
+      <span class="ttl" style="margin-left:7px">看展现场题</span>
+    </div>
+    <div class="sqbody">
+      <div class="stepbar"><b>选择观点</b><b class="on">答案解析</b><b>发光词</b><b>改写</b><b>收藏</b></div>
+      <div class="alayer">
+        <div class="stance">观众研究 / 文化消费</div>
+        <div class="core">值不值得看，取决于你想从展览里得到什么：作品，还是现场。</div>
+        <div class="expl">同一次展览对不同人并不是同一个对象。想看懂作品和想获得一个适合拍照的现场，会通向完全不同的评价。</div>
+      </div>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">03 回答层（蓝底容器，从下往上滑入）· 核心句 21sp</p>
+</section>
+
+<!-- 07 出处 + 发光词 -->
+<section class="shot">
+  <div class="hd"><span class="no">07</span><span class="tc">0:27–0:32</span><span class="dur">5s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span>
+      <span style="display:inline-block;width:26px;height:26px;border-radius:42px 48px 38px 50px;background:var(--lime);border:2px solid var(--ink);transform:rotate(-10deg);margin-left:8px"></span>
+      <span class="ttl" style="margin-left:7px">看展现场题</span>
+    </div>
+    <div class="sqbody">
+      <div class="stepbar"><b>选择观点</b><b>答案解析</b><b class="on">发光词</b><b>改写</b><b>收藏</b></div>
+      <div class="alayer">
+        <div class="expl" style="margin-top:0">同一次展览对不同人并不是同一个对象……</div>
+        <div class="src">出处线索：文化消费研究；布尔迪厄关于品味与区隔的讨论</div>
+        <div class="glowrow">
+          <span class="gpill"><svg viewBox="0 0 24 24"><path d="M12 2 14.9 9.2 22.5 9.6 16.6 14.5 18.5 21.9 12 17.6 5.5 21.9 7.4 14.5 1.5 9.6 9.1 9.2Z" fill="none" stroke="#252527" stroke-width="2.1"/></svg>文化消费</span>
+          <span class="gpill p"><svg viewBox="0 0 24 24"><path d="M12 2 14.9 9.2 22.5 9.6 16.6 14.5 18.5 21.9 12 17.6 5.5 21.9 7.4 14.5 1.5 9.6 9.1 9.2Z" fill="none" stroke="#252527" stroke-width="2.1"/></svg>区隔</span>
+        </div>
+      </div>
+      <div class="risk"><b>翻车点</b>　容易被理解成只想拍照。</div>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">出处线索 / 发光词（点开是术语弹层）</p>
+</section>
+
+<!-- 08 翻车 / 补救 -->
+<section class="shot">
+  <div class="hd"><span class="no">08</span><span class="tc">0:32–0:37</span><span class="dur">5s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span>
+      <span style="display:inline-block;width:26px;height:26px;border-radius:42px 48px 38px 50px;background:var(--lime);border:2px solid var(--ink);transform:rotate(-10deg);margin-left:8px"></span>
+      <span class="ttl" style="margin-left:7px">看展现场题</span>
+    </div>
+    <div class="sqbody">
+      <div class="stepbar"><b>选择观点</b><b>答案解析</b><b>发光词</b><b class="on">改写</b><b>收藏</b></div>
+      <div class="risk"><b>翻车点</b>　容易被理解成只想拍照。</div>
+      <div class="risk"><b>补救句</b>　补一句「认真看和拍照也不冲突，关键是你愿不愿意为一件作品多停一分钟。」</div>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">翻车点 / 补救句（给说不下去的人一条退路）</p>
+</section>
+
+<!-- 09 改写一句 -->
+<section class="shot">
+  <div class="hd"><span class="no">09</span><span class="tc">0:37–0:43</span><span class="dur">6s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span>
+      <span style="display:inline-block;width:26px;height:26px;border-radius:42px 48px 38px 50px;background:var(--lime);border:2px solid var(--ink);transform:rotate(-10deg);margin-left:8px"></span>
+      <span class="ttl" style="margin-left:7px">看展现场题</span>
+    </div>
+    <div class="sqbody">
+      <div class="stepbar"><b>选择观点</b><b>答案解析</b><b>发光词</b><b class="on">改写</b><b>收藏</b></div>
+      <div class="rewr" style="border-top:0;margin-top:0;padding-top:0">
+        <div class="lb">如果是我，我会这么说</div>
+        <div class="rin">值不值得看，得看你想要什么——认真看一件作品，还是找个地方拍张照。</div>
+      </div>
+      <div class="btn pri">🔖 收藏到台词本</div>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">04 改写一句 · 用你自己的话重说一遍</p>
+</section>
+
+<!-- 10 存进台词本 -->
+<section class="shot">
+  <div class="hd"><span class="no">10</span><span class="tc">0:43–0:48</span><span class="dur">5s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span>
+      <span style="display:inline-block;width:26px;height:26px;border-radius:42px 48px 38px 50px;background:var(--lime);border:2px solid var(--ink);transform:rotate(-10deg);margin-left:8px"></span>
+      <span class="ttl" style="margin-left:7px">看展现场题</span>
+    </div>
+    <div class="sqbody">
+      <div class="stepbar"><b>选择观点</b><b>答案解析</b><b>发光词</b><b>改写</b><b class="on">收藏</b></div>
+      <div class="pcard" style="padding:16px 18px">
+        <div class="sqprog">台词本 · 1 天后可换个装</div>
+        <div class="sqq" style="font-size:15px;line-height:1.6;margin-top:9px">值不值得看，得看你想要什么——认真看一件作品，还是找个地方拍张照。</div>
+        <div class="glowrow">
+          <span class="gpill"><svg viewBox="0 0 24 24"><path d="M12 2 14.9 9.2 22.5 9.6 16.6 14.5 18.5 21.9 12 17.6 5.5 21.9 7.4 14.5 1.5 9.6 9.1 9.2Z" fill="none" stroke="#252527" stroke-width="2.1"/></svg>文化消费</span>
+          <span class="gpill p"><svg viewBox="0 0 24 24"><path d="M12 2 14.9 9.2 22.5 9.6 16.6 14.5 18.5 21.9 12 17.6 5.5 21.9 7.4 14.5 1.5 9.6 9.1 9.2Z" fill="none" stroke="#252527" stroke-width="2.1"/></svg>区隔</span>
+        </div>
+      </div>
+      <div class="btn sec blue" style="opacity:.55">下一道现场题</div>
+    </div>
+    <div class="toast">已保存到台词本</div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">05 存进台词本（选过的立场记进谱系偏好）</p>
+</section>
+
+<!-- 11 概念库 -->
+<section class="shot">
+  <div class="hd"><span class="no">11</span><span class="tc">0:48–0:55</span><span class="dur">7s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span><span class="ttl">概念库</span></div>
+    <div class="kb">
+      <div class="sub2">1019 个概念，按领域和难度找</div>
+      <div class="stats">
+        <div class="stat a"><div class="n">1019</div><div class="l">全部概念</div></div>
+        <div class="stat b"><div class="n">37</div><div class="l">已学</div></div>
+      </div>
+      <div class="fav"><span class="st">★</span><span class="sp">我的收藏</span><span>12 ›</span></div>
+      <div class="search">搜索概念、人物、作品</div>
+      <div class="kbh">领域</div>
+      <div class="grid2">
+        <div class="fcard a"><div class="fn">哲学</div><div class="fc">186</div><div class="fp"><i style="width:22%"></i></div></div>
+        <div class="fcard b"><div class="fn">美术</div><div class="fc">241</div><div class="fp"><i style="width:41%"></i></div></div>
+        <div class="fcard c"><div class="fn">文学</div><div class="fc">198</div><div class="fp"><i style="width:15%"></i></div></div>
+        <div class="fcard d"><div class="fn">社会学</div><div class="fc">142</div><div class="fp"><i style="width:8%"></i></div></div>
+      </div>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">一千个概念，一条长廊</p>
+</section>
+
+<!-- 12 识宝取景 -->
+<section class="shot">
+  <div class="hd"><span class="no">12</span><span class="tc">0:55–1:01</span><span class="dur">6s</span></div>
+  <div class="phone">
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="cam">
+      <div class="scene"><div class="camframe"><div class="camcanvas"></div></div></div>
+      <span class="cambadge">识宝</span>
+    </div>
+    <div class="camctl"><span class="cbtn">▤</span><span class="shut"><i></i></span><span class="cbtn">⚡</span></div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">拍一下，就知道这是什么（取景满屏，4:3 拍摄）</p>
+</section>
+
+<!-- 13 识别中 -->
+<section class="shot">
+  <div class="hd"><span class="no">13</span><span class="tc">1:01–1:05</span><span class="dur">4s</span></div>
+  <div class="phone">
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="stage">
+      <div class="blur"></div>
+      <div class="vf" style="left:50%;top:44%"><div class="camcanvas"></div></div>
+      <div class="scanline" style="top:32%"></div>
+      <span class="corner" style="left:40px;top:120px;border-right:0;border-bottom:0"></span>
+      <span class="corner" style="right:40px;top:120px;border-left:0;border-bottom:0"></span>
+      <span class="corner" style="left:40px;bottom:64px;border-right:0;border-top:0"></span>
+      <span class="corner" style="right:40px;bottom:64px;border-left:0;border-top:0"></span>
+      <span class="vault">藏宝阁 <span>12</span></span>
+      <span class="syspill">正在识别这件艺术品…</span>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">扫描线 1100ms 一次；取景框 2dp 纸白边 + 四角标记</p>
+</section>
+
+<!-- 14 抠图落卡 -->
+<section class="shot">
+  <div class="hd"><span class="no">14</span><span class="tc">1:05–1:13</span><span class="dur">8s</span></div>
+  <div class="phone">
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="stage" style="flex:0 0 220px">
+      <div class="blur"></div>
+      <div class="cutwrap">
+        <div class="sil"></div>
+        <div class="fr"><div class="cc"></div></div>
+      </div>
+      <span class="vault">藏宝阁 <span>12</span></span>
+    </div>
+    <div class="sheet" style="flex:1;margin-top:8px">
+      <div class="shead"><h3>睡莲</h3><div class="meta">画作 · 1906 年 · 布面油画 · 克劳德·莫奈</div></div>
+      <div class="rule"></div>
+      <div class="secs">
+        <div class="sec"><div class="lb">这是什么</div><div class="tx">莫奈《睡莲》系列中的一幅，画的是吉维尼花园的池塘。</div></div>
+        <div class="sec"><div class="lb">怎么看</div><div class="tx">退后两步看整体：水面没有轮廓线，全靠笔触和色彩堆出光的变化。</div></div>
+      </div>
+    </div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">作品连着画框一起"拿"出来（ink 剪影 + 弹簧过冲）</p>
+</section>
+
+<!-- 15 讲解卡全貌 -->
+<section class="shot">
+  <div class="hd"><span class="no">15</span><span class="tc">1:13–1:17</span><span class="dur">4s</span></div>
+  <div class="phone">
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span><span class="ttl">识宝</span></div>
+    <div class="sheet" style="flex:1;margin-top:8px">
+      <div class="shead"><h3>睡莲</h3><div class="meta">画作 · 1906 年 · 布面油画 · 克劳德·莫奈</div></div>
+      <div class="rule"></div>
+      <div class="secs">
+        <div class="sec"><div class="lb">这是什么</div><div class="tx">莫奈《睡莲》系列中的一幅，画的是吉维尼花园的池塘。</div></div>
+        <div class="sec"><div class="lb">怎么看</div><div class="tx">退后两步看整体：水面没有轮廓线，全靠笔触堆出光的变化；凑近看每一笔都是分开的。</div></div>
+        <div class="sec"><div class="lb">怎么聊</div><div class="tx">你可以说：他不是在画睡莲，是在画光落在水上的样子。</div></div>
+        <div class="sec"><div class="lb">出处</div><div class="tx">展签写明为芝加哥艺术博物馆藏</div></div>
+      </div>
+      <div class="kwpills"><b>印象派</b><b>睡莲</b><b>光色</b></div>
+      <div class="save"><div class="btn pri">收进藏宝阁</div></div>
+    </div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">是什么 / 怎么看 / 怎么聊 / 出处（分段错峰浮现）</p>
+</section>
+
+<!-- 16 台词本 -->
+<section class="shot">
+  <div class="hd"><span class="no">16</span><span class="tc">1:17–1:22</span><span class="dur">5s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span><span class="ttl">台词本</span></div>
+    <div class="ph">
+      <div class="phrase">
+        <div class="t">值不值得看，得看你想要什么——认真看一件作品，还是找个地方拍张照。</div>
+        <div class="tag">文化消费 · 区隔 ⁄ 看展现场题</div>
+      </div>
+      <div class="phrase">
+        <div class="t">先别管作者想说什么，看它反复用了什么材料、什么动作，它已经在带着你看了。</div>
+        <div class="tag">形式 · 媒介 ⁄ 看展现场题</div>
+      </div>
+      <div class="phrase">
+        <div class="t">它不是要给你一个答案，而是让你先停下来，盯着某样东西看久一点。</div>
+        <div class="tag">观看 · 审美经验 ⁄ 看展现场题</div>
+      </div>
+    </div>
+    <div class="nav manual"><b>今日</b><b class="on">手册</b><b>路线</b></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">把好用的说法收进自己的本子，想用的时候翻得到</p>
+</section>
+
+<!-- 17 助手 -->
+<section class="shot">
+  <div class="hd"><span class="no">17</span><span class="tc">1:22–1:26</span><span class="dur">4s</span></div>
+  <div class="phone"><i class="blob"></i><i class="limecirc"></i>
+    <div class="sbar"><span>9:41</span><span>▮▮▮ ⌾ ▰</span></div>
+    <div class="sbar2"><span class="back">‹</span><span class="ttl">文艺助手</span>
+      <span style="margin-left:auto;display:flex;border:2px solid var(--ink);border-radius:999px;background:var(--paper);overflow:hidden">
+        <span style="font:800 11.5px/1 var(--rnd);padding:5px 12px;background:var(--ink);color:var(--paper)">问答</span>
+        <span style="font:800 11.5px/1 var(--rnd);padding:5px 12px">识宝</span>
+      </span>
+    </div>
+    <div class="chat">
+      <div class="bub me">印象派和后印象派到底差在哪？</div>
+      <div class="bub"><div class="who">文艺助手</div>印象派追光，后印象派开始追问结构：塞尚把景物拆成几何，梵高把情绪加进笔触。<div class="cite">依据 · 概念库：印象派 / 后印象派 / 塞尚</div></div>
+    </div>
+    <div class="inbar"><span class="ibtn">＋</span><span class="ifield">问点什么</span><span class="ibtn send">↑</span></div>
+    <div class="gbar"><i></i></div>
+  </div>
+  <p class="sub">卡住的时候，先问一句</p>
+</section>
+
+<!-- 18 落版 -->
+<section class="shot">
+  <div class="hd"><span class="no">18</span><span class="tc">1:26–1:30</span><span class="dur">4s</span></div>
+  <div class="phone" style="background:#F3F0E8;border-color:#252527">
+    <div class="endcard">
+      <img src="assets/logo.png" alt="文艺指南">
+      <div class="sl">别人抛出一个话题，<br>你知道怎么接</div>
+      <div class="qr"><img src="assets/qr.png" alt="下载二维码"></div>
+      <div class="ver">v1.0.133 · Android ｜ iOS 即将上架</div>
+    </div>
+  </div>
+  <p class="sub">视频落版（全片唯一非 App 画面）</p>
+</section>
+
+</main>
+</body>
+</html>
