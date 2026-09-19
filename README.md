@@ -6,10 +6,21 @@
 
 ## 画布约定
 
-- **1px = 1dp**，机型 **360×800dp**（现代安卓 20:9 比例）
+- **1px = 1dp**，机型 **360×800dp**（现代安卓 20:9 比例；状态栏 28dp）
 - 尺寸、圆角、边框、硬影（`shadow25D`）、字号、颜色**全部取自 app 源码**，未做四舍五入
+- **字体与真机同源**：中文用 **阿里妈妈方圆体**（app 里 `RoundedFont` = `alimama_fangyuan_regular/bold.ttf`），数字用 **Montserrat**；本仓用官网同款 woff2
 - 配色为 v0.7 token 真实值：底 `#9FAFF0`、纸白 `#FFF9EC`、墨 `#252527`、水色 `#92DDD1`、粉 `#E98BCF`、柠檬 `#CBEF72`、黄 `#F1CE67`、蓝 `#92A7ED`、紫 `#7F6F90`
 - 顶栏 logo 用真机资源 `artify_logo_vector.png`
+- 硬影是**无模糊的实心墨色下偏移**（`box-shadow: 0 Npx 0 #252527`），不是投影
+
+## 三份参照来源
+
+| 来源 | 取什么 |
+|---|---|
+| app 源码（Kotlin/Compose） | 各界面尺寸、圆角、padding、字号字重、文案、交互与动画状态 |
+| 官网 `styles.css` | 设计 token、硬影语义、字体族（`--font-cn`/`--font-num`） |
+| `docs/*.html` 设计稿 | 机型规格（状态栏 28dp / 相机区 592dp / 底栏 116dp）、识宝相机控件 |
+
 
 ## 配时（严格 90 秒）
 
