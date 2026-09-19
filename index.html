@@ -214,8 +214,9 @@ main{display:grid;grid-template-columns:repeat(auto-fill,368px);gap:36px 24px;ju
 /* 结果舞台 */
 .stage{position:relative;z-index:2;margin:8px 16px 0;flex:1;min-height:0;border-radius:20px;border:2px solid var(--ink);
   background:#1E1E20;overflow:hidden}
-.stage .blur{position:absolute;inset:0;background:linear-gradient(165deg,#6E6A63,#3A3834);transform:scale(1.28);
-  filter:blur(9px);opacity:.55}
+.stage .blur{position:absolute;inset:0;background:
+  radial-gradient(closest-side at 50% 42%,#6E6A63,rgba(58,56,52,.9) 60%,#2E2C29),
+  linear-gradient(165deg,#5A564F,#2E2C29);transform:scale(1.28);opacity:.72}
 .vf{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);border:2px solid var(--paper);
   border-radius:10px;background:var(--ink);padding:0;overflow:hidden}
 .vf .camcanvas{width:118px;height:92px}
